@@ -2,15 +2,15 @@ export const translations = {
   // Main Game
   quizRoulette: {
     en: 'Quiz Roulette',
-    ckb: 'ڕولێتی پرسیار'
+    ckb: 'گەڕانەوەی پرسیار'
   },
   spinToSelect: {
-    en: 'Spin the roulette wheel to select the next player!',
-    ckb: 'ڕولێتەکە بسووڕێنە بۆ هەڵبژاردنی یاریزانی داهاتوو!'
+    en: 'Spin the wheel to select the next player!',
+    ckb: 'چەرخەکە بسووڕێنە بۆ هەڵبژاردنی یاریزانی داهاتوو!'
   },
   spinTheWheel: {
     en: 'Spin the Wheel!',
-    ckb: 'ڕولێتەکە بسووڕێنە!'
+    ckb: 'چەرخەکە بسووڕێنە!'
   },
   spinning: {
     en: 'Spinning...',
