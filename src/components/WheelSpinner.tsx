@@ -70,12 +70,19 @@ const WheelSpinner: React.FC<WheelSpinnerProps> = ({
     // Normalize rotation to 0-2π range
     const normalizedRotation = ((rotation % (2 * Math.PI)) + (2 * Math.PI)) % (2 * Math.PI);
     
-    // The arrow points to the top (0 radians), so we need to find which segment is at the top
-    // Since we rotate the wheel clockwise, we need to account for that
-    const arrowAngle = (2 * Math.PI - normalizedRotation) % (2 * Math.PI);
+    // The arrow points to the top (12 o'clock position = -π/2 or 3π/2)
+    // We need to find which segment is under the arrow
+    // Since segments are drawn starting from 0 and going clockwise,
+    // and the wheel rotates clockwise, we need to account for the rotation
+    
+    // Calculate the angle from the top of the wheel (where arrow points)
+    // Add π/2 to convert from standard math coordinates to our wheel coordinates
+    const arrowAngle = (normalizedRotation + Math.PI / 2) % (2 * Math.PI);
     
     // Find which segment the arrow is pointing to
-    const segmentIndex = Math.floor(arrowAngle / segmentAngle) % availableUsers.length;
+    // We need to account for the fact that segments are centered on their angles
+    const adjustedAngle = (arrowAngle + segmentAngle / 2) % (2 * Math.PI);
+    const segmentIndex = Math.floor(adjustedAngle / segmentAngle) % availableUsers.length;
     
     return availableUsers[segmentIndex];
   }, [availableUsers]);
@@ -101,9 +108,10 @@ const WheelSpinner: React.FC<WheelSpinnerProps> = ({
     ctx.translate(centerX, centerY);
     ctx.rotate(rotation);
 
-    // Draw segments
+    // Draw segments - starting from the top and going clockwise
     availableUsers.forEach((user, index) => {
-      const startAngle = index * segmentAngle;
+      // Start from -π/2 (top of the circle) and go clockwise
+      const startAngle = -Math.PI / 2 + index * segmentAngle;
       const endAngle = startAngle + segmentAngle;
       const color = wheelColors[index] || '#FF6B6B';
 
@@ -220,11 +228,15 @@ const WheelSpinner: React.FC<WheelSpinnerProps> = ({
     const randomIndex = Math.floor(Math.random() * availableUsers.length);
     const targetUser = availableUsers[randomIndex];
     
-    // Calculate target angle - we want the selected segment to be at the top (where arrow points)
+    // Calculate target angle to land on the selected user
     const segmentAngle = (2 * Math.PI) / availableUsers.length;
-    // To get segment at top, we need to rotate so that the segment's center is at 0 radians
-    const targetSegmentCenter = randomIndex * segmentAngle + segmentAngle / 2;
-    // We want this to end up at 0 (top), so we need to rotate by -targetSegmentCenter
+    
+    // We want the center of the target segment to be at the top (where arrow points)
+    // The segment center is at: -π/2 + randomIndex * segmentAngle + segmentAngle/2
+    // We want this to equal 0 (after normalization), so we need to rotate by the negative of this
+    const targetSegmentCenter = -Math.PI / 2 + randomIndex * segmentAngle + segmentAngle / 2;
+    
+    // Calculate the final rotation needed to align the target segment with the arrow
     const targetAngle = -targetSegmentCenter;
     const totalRotation = spins * 2 * Math.PI + targetAngle;
 
