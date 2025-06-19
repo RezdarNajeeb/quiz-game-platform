@@ -94,56 +94,39 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
   // Generate alternating colors for user segments
   const getSegmentColor = (index: number) => {
     const colors = [
-      'bg-red-600 text-white',
-      'bg-blue-600 text-white',
-      'bg-green-600 text-white',
-      'bg-purple-600 text-white',
-      'bg-orange-600 text-white',
-      'bg-indigo-600 text-white',
-      'bg-pink-600 text-white',
-      'bg-teal-600 text-white'
+      'bg-red-600',
+      'bg-blue-600',
+      'bg-green-600',
+      'bg-purple-600',
+      'bg-orange-600',
+      'bg-indigo-600',
+      'bg-pink-600',
+      'bg-teal-600'
     ];
     return colors[index % colors.length];
   };
 
-  // Enhanced text fitting function
-  const getTextStyle = (userName: string, userCount: number) => {
-    // Base font sizes depending on number of users
-    let fontSize: string;
-    let maxWidth: string;
-    let displayName = userName;
+  // Get font size based on user count and name length
+  const getFontSize = (userCount: number, nameLength: number) => {
+    if (userCount <= 4) return nameLength > 10 ? '14px' : '16px';
+    if (userCount <= 6) return nameLength > 8 ? '12px' : '14px';
+    if (userCount <= 8) return nameLength > 6 ? '10px' : '12px';
+    if (userCount <= 12) return nameLength > 5 ? '8px' : '10px';
+    if (userCount <= 16) return nameLength > 4 ? '7px' : '8px';
+    return nameLength > 3 ? '6px' : '7px';
+  };
 
-    if (userCount <= 4) {
-      fontSize = '18px';
-      maxWidth = '80px';
-      if (userName.length > 8) displayName = `${userName.substring(0, 6)}...`;
-    } else if (userCount <= 6) {
-      fontSize = '16px';
-      maxWidth = '70px';
-      if (userName.length > 8) displayName = `${userName.substring(0, 6)}...`;
-    } else if (userCount <= 8) {
-      fontSize = '14px';
-      maxWidth = '60px';
-      if (userName.length > 7) displayName = `${userName.substring(0, 5)}...`;
-    } else if (userCount <= 12) {
-      fontSize = '12px';
-      maxWidth = '50px';
-      if (userName.length > 6) displayName = `${userName.substring(0, 4)}...`;
-    } else if (userCount <= 16) {
-      fontSize = '10px';
-      maxWidth = '40px';
-      if (userName.length > 5) displayName = `${userName.substring(0, 3)}...`;
-    } else {
-      fontSize = '8px';
-      maxWidth = '30px';
-      if (userName.length > 4) displayName = `${userName.substring(0, 2)}...`;
-    }
+  // Truncate name if too long
+  const getTruncatedName = (name: string, userCount: number) => {
+    let maxLength;
+    if (userCount <= 4) maxLength = 12;
+    else if (userCount <= 6) maxLength = 10;
+    else if (userCount <= 8) maxLength = 8;
+    else if (userCount <= 12) maxLength = 6;
+    else if (userCount <= 16) maxLength = 5;
+    else maxLength = 4;
 
-    return {
-      fontSize,
-      maxWidth,
-      displayName
-    };
+    return name.length > maxLength ? `${name.substring(0, maxLength - 1)}…` : name;
   };
 
   const segmentAngle = availableUsers.length > 0 ? 360 / availableUsers.length : 0;
@@ -213,7 +196,6 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
                   const angle = segmentAngle * index;
                   const nextAngle = segmentAngle * (index + 1);
                   const midAngle = angle + segmentAngle / 2;
-                  const textStyle = getTextStyle(user.name, availableUsers.length);
                   
                   return (
                     <React.Fragment key={`${user.id}-${index}`}>
@@ -232,28 +214,31 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
                           }%)`
                         }}
                       />
-                      {/* User Name Text - Positioned separately for better visibility */}
+                      
+                      {/* Radial Text - Flowing from edge to center like dividers */}
                       <div
-                        className="absolute text-white font-black text-center select-none pointer-events-none z-10"
+                        className="absolute text-white font-black select-none pointer-events-none z-10"
                         style={{
-                          left: `calc(50% + ${40 * Math.cos(((midAngle - 90) * Math.PI) / 180)}px)`,
-                          top: `calc(50% + ${40 * Math.sin(((midAngle - 90) * Math.PI) / 180)}px)`,
-                          transform: `translate(-50%, -50%) rotate(${midAngle > 90 && midAngle < 270 ? midAngle + 180 : midAngle}deg)`,
-                          fontSize: textStyle.fontSize,
-                          maxWidth: textStyle.maxWidth,
-                          lineHeight: '1.1',
-                          textShadow: '2px 2px 4px rgba(0,0,0,0.9), -1px -1px 2px rgba(0,0,0,0.8), 0 0 8px rgba(0,0,0,0.6)',
+                          left: '50%',
+                          top: '50%',
+                          transformOrigin: '0 0',
+                          transform: `rotate(${midAngle}deg)`,
+                          fontSize: getFontSize(availableUsers.length, user.name.length),
                           fontWeight: '900',
-                          letterSpacing: availableUsers.length > 12 ? '-0.5px' : '0px',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
+                          textShadow: '2px 2px 4px rgba(0,0,0,0.9), -2px -2px 4px rgba(0,0,0,0.8), 0 0 8px rgba(0,0,0,0.7)',
+                          WebkitTextStroke: '0.5px rgba(0,0,0,0.8)',
                           filter: 'drop-shadow(0 0 3px rgba(0,0,0,1))',
-                          WebkitTextStroke: '0.5px rgba(0,0,0,0.8)'
+                          whiteSpace: 'nowrap',
+                          width: '45%', // Text flows from center to edge
+                          height: 'auto',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          paddingLeft: '15%', // Start text away from center
                         }}
                         title={user.name}
                       >
-                        {textStyle.displayName}
+                        {getTruncatedName(user.name, availableUsers.length)}
                       </div>
                     </React.Fragment>
                   );
