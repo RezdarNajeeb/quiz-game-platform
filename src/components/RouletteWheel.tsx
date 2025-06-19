@@ -106,25 +106,25 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
     return colors[index % colors.length];
   };
 
-  // Get font size based on user count and name length
+  // Enhanced font size calculation - BIGGER fonts!
   const getFontSize = (userCount: number, nameLength: number) => {
-    if (userCount <= 4) return nameLength > 10 ? '14px' : '16px';
-    if (userCount <= 6) return nameLength > 8 ? '12px' : '14px';
-    if (userCount <= 8) return nameLength > 6 ? '10px' : '12px';
-    if (userCount <= 12) return nameLength > 5 ? '8px' : '10px';
-    if (userCount <= 16) return nameLength > 4 ? '7px' : '8px';
-    return nameLength > 3 ? '6px' : '7px';
+    if (userCount <= 4) return nameLength > 10 ? '20px' : '24px';
+    if (userCount <= 6) return nameLength > 8 ? '18px' : '22px';
+    if (userCount <= 8) return nameLength > 6 ? '16px' : '20px';
+    if (userCount <= 12) return nameLength > 5 ? '14px' : '18px';
+    if (userCount <= 16) return nameLength > 4 ? '12px' : '16px';
+    return nameLength > 3 ? '10px' : '14px';
   };
 
   // Truncate name if too long
   const getTruncatedName = (name: string, userCount: number) => {
     let maxLength;
-    if (userCount <= 4) maxLength = 12;
-    else if (userCount <= 6) maxLength = 10;
-    else if (userCount <= 8) maxLength = 8;
-    else if (userCount <= 12) maxLength = 6;
-    else if (userCount <= 16) maxLength = 5;
-    else maxLength = 4;
+    if (userCount <= 4) maxLength = 15;
+    else if (userCount <= 6) maxLength = 12;
+    else if (userCount <= 8) maxLength = 10;
+    else if (userCount <= 12) maxLength = 8;
+    else if (userCount <= 16) maxLength = 6;
+    else maxLength = 5;
 
     return name.length > maxLength ? `${name.substring(0, maxLength - 1)}…` : name;
   };
@@ -199,23 +199,23 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
                   
                   return (
                     <React.Fragment key={`${user.id}-${index}`}>
-                      {/* Background Segment */}
+                      {/* Background Segment - Perfect circle division */}
                       <div
                         className={`absolute w-full h-full ${getSegmentColor(index)}`}
                         style={{
                           clipPath: `polygon(50% 50%, ${
-                            50 + 48 * Math.cos(((angle - 90) * Math.PI) / 180)
+                            50 + 50 * Math.cos(((angle - 90) * Math.PI) / 180)
                           }% ${
-                            50 + 48 * Math.sin(((angle - 90) * Math.PI) / 180)
+                            50 + 50 * Math.sin(((angle - 90) * Math.PI) / 180)
                           }%, ${
-                            50 + 48 * Math.cos(((nextAngle - 90) * Math.PI) / 180)
+                            50 + 50 * Math.cos(((nextAngle - 90) * Math.PI) / 180)
                           }% ${
-                            50 + 48 * Math.sin(((nextAngle - 90) * Math.PI) / 180)
+                            50 + 50 * Math.sin(((nextAngle - 90) * Math.PI) / 180)
                           }%)`
                         }}
                       />
                       
-                      {/* Radial Text - Flowing from edge to center like dividers */}
+                      {/* Radial Text - Flowing from center to edge like dividers */}
                       <div
                         className="absolute text-white font-black select-none pointer-events-none z-10"
                         style={{
@@ -225,16 +225,17 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
                           transform: `rotate(${midAngle}deg)`,
                           fontSize: getFontSize(availableUsers.length, user.name.length),
                           fontWeight: '900',
-                          textShadow: '2px 2px 4px rgba(0,0,0,0.9), -2px -2px 4px rgba(0,0,0,0.8), 0 0 8px rgba(0,0,0,0.7)',
-                          WebkitTextStroke: '0.5px rgba(0,0,0,0.8)',
-                          filter: 'drop-shadow(0 0 3px rgba(0,0,0,1))',
+                          textShadow: '3px 3px 6px rgba(0,0,0,0.9), -3px -3px 6px rgba(0,0,0,0.8), 0 0 12px rgba(0,0,0,0.7), 0 0 20px rgba(0,0,0,0.5)',
+                          WebkitTextStroke: '1px rgba(0,0,0,0.9)',
+                          filter: 'drop-shadow(0 0 4px rgba(0,0,0,1))',
                           whiteSpace: 'nowrap',
-                          width: '45%', // Text flows from center to edge
+                          width: '42%', // Text flows from center to edge
                           height: 'auto',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          paddingLeft: '15%', // Start text away from center
+                          paddingLeft: '18%', // Start text away from center hub
+                          letterSpacing: availableUsers.length > 12 ? '-0.5px' : '0.5px',
                         }}
                         title={user.name}
                       >
@@ -244,15 +245,15 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
                   );
                 })}
 
-                {/* Separator lines */}
+                {/* Separator lines - Perfect radial division */}
                 {availableUsers.map((_, index) => (
                   <div
                     key={`separator-${index}`}
-                    className="absolute w-0.5 bg-white origin-bottom opacity-80 shadow-sm"
+                    className="absolute w-0.5 bg-white origin-bottom opacity-90 shadow-sm"
                     style={{
-                      height: '48%',
+                      height: '50%', // Full radius
                       left: '50%',
-                      top: '2%',
+                      top: '0%', // Start from edge
                       transform: `translateX(-50%) rotate(${segmentAngle * index}deg)`,
                     }}
                   />
