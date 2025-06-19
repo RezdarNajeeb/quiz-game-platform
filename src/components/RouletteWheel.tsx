@@ -106,6 +106,50 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
     return colors[index % colors.length];
   };
 
+  // Enhanced text fitting function
+  const getTextStyle = (userName: string, userCount: number) => {
+    const segmentAngleRad = (2 * Math.PI) / userCount;
+    const availableWidth = 2 * 35 * Math.sin(segmentAngleRad / 2) * 0.8; // Available width in pixels
+    
+    // Base font sizes depending on number of users
+    let fontSize: string;
+    let maxWidth: string;
+    let displayName = userName;
+
+    if (userCount <= 4) {
+      fontSize = '1.25rem'; // 20px
+      maxWidth = '90px';
+      if (userName.length > 8) displayName = `${userName.substring(0, 6)}...`;
+    } else if (userCount <= 6) {
+      fontSize = '1.125rem'; // 18px
+      maxWidth = '80px';
+      if (userName.length > 8) displayName = `${userName.substring(0, 6)}...`;
+    } else if (userCount <= 8) {
+      fontSize = '1rem'; // 16px
+      maxWidth = '70px';
+      if (userName.length > 7) displayName = `${userName.substring(0, 5)}...`;
+    } else if (userCount <= 12) {
+      fontSize = '0.875rem'; // 14px
+      maxWidth = '60px';
+      if (userName.length > 6) displayName = `${userName.substring(0, 4)}...`;
+    } else if (userCount <= 16) {
+      fontSize = '0.75rem'; // 12px
+      maxWidth = '50px';
+      if (userName.length > 5) displayName = `${userName.substring(0, 3)}...`;
+    } else {
+      fontSize = '0.625rem'; // 10px
+      maxWidth = '40px';
+      if (userName.length > 4) displayName = `${userName.substring(0, 2)}...`;
+    }
+
+    return {
+      fontSize,
+      maxWidth,
+      displayName,
+      lineHeight: userCount > 12 ? '1.1' : '1.2'
+    };
+  };
+
   const segmentAngle = availableUsers.length > 0 ? 360 / availableUsers.length : 0;
 
   if (availableUsers.length === 0) {
@@ -173,6 +217,7 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
                   const angle = segmentAngle * index;
                   const nextAngle = segmentAngle * (index + 1);
                   const midAngle = angle + segmentAngle / 2;
+                  const textStyle = getTextStyle(user.name, availableUsers.length);
                   
                   return (
                     <div
@@ -190,24 +235,29 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
                         }%)`
                       }}
                     >
-                      {/* User name positioned in the center of each segment */}
+                      {/* User name positioned in the center of each segment with optimal text fitting */}
                       <div
-                        className="absolute whitespace-nowrap select-none transform -translate-x-1/2 -translate-y-1/2 text-center px-1"
+                        className="absolute whitespace-nowrap select-none transform -translate-x-1/2 -translate-y-1/2 text-center px-1 font-bold"
                         style={{
                           left: `calc(50% + ${35 * Math.cos(((midAngle - 90) * Math.PI) / 180)}px)`,
                           top: `calc(50% + ${35 * Math.sin(((midAngle - 90) * Math.PI) / 180)}px)`,
                           transform: `translate(-50%, -50%) rotate(${midAngle}deg)`,
-                          textShadow: '0 1px 3px rgba(0,0,0,0.5)',
-                          fontSize: availableUsers.length > 12 ? '0.75rem' : 
-                                   availableUsers.length > 8 ? '0.875rem' : 
-                                   availableUsers.length > 6 ? '1rem' : '1.125rem',
-                          maxWidth: availableUsers.length > 8 ? '60px' : '80px',
-                          lineHeight: '1.2',
+                          textShadow: '0 1px 3px rgba(0,0,0,0.7), 0 0 10px rgba(0,0,0,0.3)',
+                          fontSize: textStyle.fontSize,
+                          maxWidth: textStyle.maxWidth,
+                          lineHeight: textStyle.lineHeight,
                           overflow: 'hidden',
-                          textOverflow: 'ellipsis'
+                          textOverflow: 'ellipsis',
+                          fontWeight: '900',
+                          letterSpacing: availableUsers.length > 12 ? '-0.02em' : '0'
                         }}
+                        title={user.name} // Show full name on hover
                       >
-                        {user.name.length > 12 ? `${user.name.substring(0, 10)}...` : user.name}
+                        <div className="flex flex-col items-center justify-center">
+                          <span className="block leading-tight">
+                            {textStyle.displayName}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   );
@@ -217,7 +267,7 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
                 {availableUsers.map((_, index) => (
                   <div
                     key={`separator-${index}`}
-                    className="absolute w-0.5 bg-white origin-bottom opacity-70"
+                    className="absolute w-0.5 bg-white origin-bottom opacity-80 shadow-sm"
                     style={{
                       height: '48%',
                       left: '50%',

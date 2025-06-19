@@ -45,6 +45,10 @@ const AdminPanel: React.FC = () => {
       const gameState = getGameState();
       saveGameState({ ...gameState, users, questions });
       saveGameSettings(settings);
+      
+      // Dispatch custom event to notify other components about settings update
+      window.dispatchEvent(new CustomEvent('settingsUpdated'));
+      
       showSaveStatus('success', t('changesSavedSuccessfully'));
     } catch (error) {
       console.error('Error saving data:', error);

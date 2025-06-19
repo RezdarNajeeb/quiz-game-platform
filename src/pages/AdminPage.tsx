@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import AdminLogin from '../components/AdminLogin';
@@ -8,7 +8,45 @@ import { getTranslation } from '../utils/translations';
 
 const AdminPage: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const settings = getGameSettings();
+  const [settings, setSettings] = useState(() => getGameSettings());
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  // Listen for storage changes to update language in real-time
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const newSettings = getGameSettings();
+      setSettings(newSettings);
+      setRefreshKey(prev => prev + 1); // Force re-render
+    };
+
+    // Listen for both storage events and custom events
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Custom event for same-tab updates
+    const handleSettingsUpdate = () => {
+      handleStorageChange();
+    };
+    
+    window.addEventListener('settingsUpdated', handleSettingsUpdate);
+
+    // Polling fallback to ensure we catch any missed updates
+    const interval = setInterval(() => {
+      const currentSettings = getGameSettings();
+      if (currentSettings.language !== settings.language || 
+          currentSettings.adminPassword !== settings.adminPassword || 
+          currentSettings.timerDuration !== settings.timerDuration) {
+        setSettings(currentSettings);
+        setRefreshKey(prev => prev + 1);
+      }
+    }, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('settingsUpdated', handleSettingsUpdate);
+      clearInterval(interval);
+    };
+  }, [settings]);
+
   const t = (key: string) => getTranslation(key, settings.language);
 
   if (!isLoggedIn) {
@@ -16,7 +54,7 @@ const AdminPage: React.FC = () => {
   }
 
   return (
-    <div dir={settings.language === 'ckb' ? 'rtl' : 'ltr'}>
+    <div key={refreshKey} dir={settings.language === 'ckb' ? 'rtl' : 'ltr'}>
       <div className="fixed top-4 right-4 z-30">
         <Link
           to="/"
@@ -24,10 +62,10 @@ const AdminPage: React.FC = () => {
         >
           <ArrowLeft size={16} className="sm:w-5 sm:h-5" />
           <span className="hidden sm:inline">{t('backToGame')}</span>
-          <span className="sm:hidden">Back</span>
+          <span className="sm:hidden">{settings.language === 'ckb' ? 'گەڕانەوە' : 'Back'}</span>
         </Link>
       </div>
-      <AdminPanel />
+      <AdminPanel key={`panel-${refreshKey}`} />
     </div>
   );
 };
