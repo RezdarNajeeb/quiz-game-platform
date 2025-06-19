@@ -108,45 +108,41 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
 
   // Enhanced text fitting function
   const getTextStyle = (userName: string, userCount: number) => {
-    const segmentAngleRad = (2 * Math.PI) / userCount;
-    const availableWidth = 2 * 35 * Math.sin(segmentAngleRad / 2) * 0.8; // Available width in pixels
-    
     // Base font sizes depending on number of users
     let fontSize: string;
     let maxWidth: string;
     let displayName = userName;
 
     if (userCount <= 4) {
-      fontSize = '1.25rem'; // 20px
-      maxWidth = '90px';
-      if (userName.length > 8) displayName = `${userName.substring(0, 6)}...`;
-    } else if (userCount <= 6) {
-      fontSize = '1.125rem'; // 18px
+      fontSize = '18px';
       maxWidth = '80px';
       if (userName.length > 8) displayName = `${userName.substring(0, 6)}...`;
-    } else if (userCount <= 8) {
-      fontSize = '1rem'; // 16px
+    } else if (userCount <= 6) {
+      fontSize = '16px';
       maxWidth = '70px';
+      if (userName.length > 8) displayName = `${userName.substring(0, 6)}...`;
+    } else if (userCount <= 8) {
+      fontSize = '14px';
+      maxWidth = '60px';
       if (userName.length > 7) displayName = `${userName.substring(0, 5)}...`;
     } else if (userCount <= 12) {
-      fontSize = '0.875rem'; // 14px
-      maxWidth = '60px';
+      fontSize = '12px';
+      maxWidth = '50px';
       if (userName.length > 6) displayName = `${userName.substring(0, 4)}...`;
     } else if (userCount <= 16) {
-      fontSize = '0.75rem'; // 12px
-      maxWidth = '50px';
+      fontSize = '10px';
+      maxWidth = '40px';
       if (userName.length > 5) displayName = `${userName.substring(0, 3)}...`;
     } else {
-      fontSize = '0.625rem'; // 10px
-      maxWidth = '40px';
+      fontSize = '8px';
+      maxWidth = '30px';
       if (userName.length > 4) displayName = `${userName.substring(0, 2)}...`;
     }
 
     return {
       fontSize,
       maxWidth,
-      displayName,
-      lineHeight: userCount > 12 ? '1.1' : '1.2'
+      displayName
     };
   };
 
@@ -220,46 +216,46 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
                   const textStyle = getTextStyle(user.name, availableUsers.length);
                   
                   return (
-                    <div
-                      key={`${user.id}-${index}`}
-                      className={`absolute w-full h-full ${getSegmentColor(index)} flex items-center justify-center font-bold`}
-                      style={{
-                        clipPath: `polygon(50% 50%, ${
-                          50 + 48 * Math.cos(((angle - 90) * Math.PI) / 180)
-                        }% ${
-                          50 + 48 * Math.sin(((angle - 90) * Math.PI) / 180)
-                        }%, ${
-                          50 + 48 * Math.cos(((nextAngle - 90) * Math.PI) / 180)
-                        }% ${
-                          50 + 48 * Math.sin(((nextAngle - 90) * Math.PI) / 180)
-                        }%)`
-                      }}
-                    >
-                      {/* User name positioned in the center of each segment with optimal text fitting */}
+                    <React.Fragment key={`${user.id}-${index}`}>
+                      {/* Background Segment */}
                       <div
-                        className="absolute whitespace-nowrap select-none transform -translate-x-1/2 -translate-y-1/2 text-center px-1 font-bold"
+                        className={`absolute w-full h-full ${getSegmentColor(index)}`}
                         style={{
-                          left: `calc(50% + ${35 * Math.cos(((midAngle - 90) * Math.PI) / 180)}px)`,
-                          top: `calc(50% + ${35 * Math.sin(((midAngle - 90) * Math.PI) / 180)}px)`,
-                          transform: `translate(-50%, -50%) rotate(${midAngle}deg)`,
-                          textShadow: '0 1px 3px rgba(0,0,0,0.7), 0 0 10px rgba(0,0,0,0.3)',
+                          clipPath: `polygon(50% 50%, ${
+                            50 + 48 * Math.cos(((angle - 90) * Math.PI) / 180)
+                          }% ${
+                            50 + 48 * Math.sin(((angle - 90) * Math.PI) / 180)
+                          }%, ${
+                            50 + 48 * Math.cos(((nextAngle - 90) * Math.PI) / 180)
+                          }% ${
+                            50 + 48 * Math.sin(((nextAngle - 90) * Math.PI) / 180)
+                          }%)`
+                        }}
+                      />
+                      {/* User Name Text - Positioned separately for better visibility */}
+                      <div
+                        className="absolute text-white font-black text-center select-none pointer-events-none z-10"
+                        style={{
+                          left: `calc(50% + ${40 * Math.cos(((midAngle - 90) * Math.PI) / 180)}px)`,
+                          top: `calc(50% + ${40 * Math.sin(((midAngle - 90) * Math.PI) / 180)}px)`,
+                          transform: `translate(-50%, -50%) rotate(${midAngle > 90 && midAngle < 270 ? midAngle + 180 : midAngle}deg)`,
                           fontSize: textStyle.fontSize,
                           maxWidth: textStyle.maxWidth,
-                          lineHeight: textStyle.lineHeight,
+                          lineHeight: '1.1',
+                          textShadow: '2px 2px 4px rgba(0,0,0,0.9), -1px -1px 2px rgba(0,0,0,0.8), 0 0 8px rgba(0,0,0,0.6)',
+                          fontWeight: '900',
+                          letterSpacing: availableUsers.length > 12 ? '-0.5px' : '0px',
+                          whiteSpace: 'nowrap',
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
-                          fontWeight: '900',
-                          letterSpacing: availableUsers.length > 12 ? '-0.02em' : '0'
+                          filter: 'drop-shadow(0 0 3px rgba(0,0,0,1))',
+                          WebkitTextStroke: '0.5px rgba(0,0,0,0.8)'
                         }}
-                        title={user.name} // Show full name on hover
+                        title={user.name}
                       >
-                        <div className="flex flex-col items-center justify-center">
-                          <span className="block leading-tight">
-                            {textStyle.displayName}
-                          </span>
-                        </div>
+                        {textStyle.displayName}
                       </div>
-                    </div>
+                    </React.Fragment>
                   );
                 })}
 
