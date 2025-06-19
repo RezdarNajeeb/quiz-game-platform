@@ -70,18 +70,20 @@ const WheelSpinner: React.FC<WheelSpinnerProps> = ({
     // Normalize rotation to 0-2π range
     const normalizedRotation = ((rotation % (2 * Math.PI)) + (2 * Math.PI)) % (2 * Math.PI);
     
-    // The arrow points to the top (12 o'clock position = -π/2 or 3π/2)
-    // We need to find which segment is under the arrow
-    // Since segments are drawn starting from 0 and going clockwise,
-    // and the wheel rotates clockwise, we need to account for the rotation
+    // The arrow points down from the top (12 o'clock position)
+    // We need to find which segment is directly under the arrow
+    // Since we draw segments starting from -π/2 (top) and going clockwise,
+    // the arrow at the top corresponds to angle 0 in our segment calculation
     
-    // Calculate the angle from the top of the wheel (where arrow points)
-    // Add π/2 to convert from standard math coordinates to our wheel coordinates
-    const arrowAngle = (normalizedRotation + Math.PI / 2) % (2 * Math.PI);
+    // Calculate which segment the arrow is pointing to
+    // The first segment starts at -π/2 and goes to -π/2 + segmentAngle
+    // We need to find which segment contains the top position (0 radians from our reference)
     
-    // Find which segment the arrow is pointing to
-    // We need to account for the fact that segments are centered on their angles
-    const adjustedAngle = (arrowAngle + segmentAngle / 2) % (2 * Math.PI);
+    // Adjust for the wheel's current rotation
+    // When the wheel rotates clockwise, the segments move clockwise
+    const adjustedAngle = (2 * Math.PI - normalizedRotation) % (2 * Math.PI);
+    
+    // Find which segment the top arrow is pointing to
     const segmentIndex = Math.floor(adjustedAngle / segmentAngle) % availableUsers.length;
     
     return availableUsers[segmentIndex];
@@ -108,9 +110,8 @@ const WheelSpinner: React.FC<WheelSpinnerProps> = ({
     ctx.translate(centerX, centerY);
     ctx.rotate(rotation);
 
-    // Draw segments - starting from the top and going clockwise
+    // Draw segments - starting from the top (-π/2) and going clockwise
     availableUsers.forEach((user, index) => {
-      // Start from -π/2 (top of the circle) and go clockwise
       const startAngle = -Math.PI / 2 + index * segmentAngle;
       const endAngle = startAngle + segmentAngle;
       const color = wheelColors[index] || '#FF6B6B';
@@ -224,21 +225,25 @@ const WheelSpinner: React.FC<WheelSpinnerProps> = ({
     const maxSpins = 8;
     const spins = minSpins + Math.random() * (maxSpins - minSpins);
     
-    // Select random user
+    // Select random user first
     const randomIndex = Math.floor(Math.random() * availableUsers.length);
     const targetUser = availableUsers[randomIndex];
     
-    // Calculate target angle to land on the selected user
+    // Calculate the angle where this user's segment center should be
+    // to align with the arrow (which points down from the top)
     const segmentAngle = (2 * Math.PI) / availableUsers.length;
     
-    // We want the center of the target segment to be at the top (where arrow points)
-    // The segment center is at: -π/2 + randomIndex * segmentAngle + segmentAngle/2
-    // We want this to equal 0 (after normalization), so we need to rotate by the negative of this
-    const targetSegmentCenter = -Math.PI / 2 + randomIndex * segmentAngle + segmentAngle / 2;
+    // The target user should be at the top (where arrow points)
+    // User at index 0 starts at -π/2, so user at randomIndex starts at:
+    const userStartAngle = -Math.PI / 2 + randomIndex * segmentAngle;
+    const userCenterAngle = userStartAngle + segmentAngle / 2;
     
-    // Calculate the final rotation needed to align the target segment with the arrow
-    const targetAngle = -targetSegmentCenter;
-    const totalRotation = spins * 2 * Math.PI + targetAngle;
+    // We want the user's center to be at the top (0 radians from vertical)
+    // So we need to rotate by the negative of the user's center angle
+    const targetRotation = -userCenterAngle;
+    
+    // Add full spins to make it look good
+    const totalRotation = spins * 2 * Math.PI + targetRotation;
 
     const startTime = Date.now();
     const startRotation = currentRotation;
