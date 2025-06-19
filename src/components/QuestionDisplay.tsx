@@ -138,27 +138,27 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6" dir={settings.language === 'ckb' ? 'rtl' : 'ltr'}>
+    <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6 px-4" dir={settings.language === 'ckb' ? 'rtl' : 'ltr'}>
       {/* Confirmation Modal */}
       {showConfirmation && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-8 max-w-md mx-4 shadow-2xl">
+          <div className="bg-white rounded-xl p-6 sm:p-8 max-w-sm sm:max-w-md mx-4 shadow-2xl">
             <div className="text-center">
-              <AlertTriangle size={48} className="mx-auto text-yellow-500 mb-4" />
-              <h3 className="text-xl font-bold text-gray-800 mb-4">{t('leaveQuestion')}</h3>
-              <p className="text-gray-600 mb-6">
+              <AlertTriangle size={40} className="mx-auto text-yellow-500 mb-4 sm:w-12 sm:h-12" />
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">{t('leaveQuestion')}</h3>
+              <p className="text-sm sm:text-base text-gray-600 mb-6">
                 {t('leaveQuestionConfirm')}
               </p>
-              <div className="flex space-x-4">
+              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
                 <button
                   onClick={cancelReturn}
-                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg font-medium transition-colors"
+                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base"
                 >
                   {t('stay')}
                 </button>
                 <button
                   onClick={confirmReturn}
-                  className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base"
                 >
                   {t('leave')}
                 </button>
@@ -170,39 +170,39 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
 
       {/* User Info */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
-        <h2 className="text-2xl font-bold text-blue-800">{t('currentPlayer')}: {user.name}</h2>
+        <h2 className="text-xl sm:text-2xl font-bold text-blue-800 break-words">{t('currentPlayer')}: {user.name}</h2>
       </div>
 
       {/* Timer */}
       <div className="flex justify-center">
-        <div className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-bold text-lg ${getTimerColor()}`}>
-          <Clock size={24} />
+        <div className={`flex items-center space-x-2 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-base sm:text-lg ${getTimerColor()}`}>
+          <Clock size={20} className="sm:w-6 sm:h-6" />
           <span>{formatTime(timeLeft)}</span>
-          {isPaused && <span className="text-sm">(Paused)</span>}
+          {isPaused && <span className="text-xs sm:text-sm">(Paused)</span>}
         </div>
       </div>
 
       {/* Pause Warning */}
       {isPaused && !isAnswered && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
-          <p className="text-yellow-800 font-medium">
+          <p className="text-yellow-800 font-medium text-sm sm:text-base">
             {t('timerPaused')}
           </p>
         </div>
       )}
 
       {/* Question */}
-      <div className="bg-white rounded-lg shadow-lg p-8">
-        <h3 className="text-2xl font-semibold mb-8 text-gray-800">{question.question}</h3>
+      <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8">
+        <h3 className="text-xl sm:text-2xl font-semibold mb-6 sm:mb-8 text-gray-800">{question.question}</h3>
 
         {/* Answer Options */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
           {question.options.map((option, index) => (
             <button
               key={index}
               onClick={() => handleAnswerSelect(index)}
               disabled={isAnswered}
-              className={`p-4 rounded-lg border-2 text-left transition-all duration-200 ${
+              className={`p-3 sm:p-4 rounded-lg border-2 text-left transition-all duration-200 text-sm sm:text-base ${
                 isAnswered
                   ? index === question.correctAnswer
                     ? 'bg-green-100 border-green-500 text-green-800'
@@ -214,7 +214,7 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
                   : 'bg-gray-50 border-gray-300 text-gray-800 hover:bg-gray-100 cursor-pointer'
               }`}
             >
-              <span className="font-medium mr-3">{String.fromCharCode(65 + index)}.</span>
+              <span className="font-medium mr-2 sm:mr-3">{String.fromCharCode(65 + index)}.</span>
               {option}
             </button>
           ))}
@@ -226,11 +226,11 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
             <button
               onClick={handleSubmit}
               disabled={selectedAnswer === null}
-              className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-8 py-3 rounded-lg font-semibold text-lg transition-colors duration-200 disabled:cursor-not-allowed"
+              className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-6 sm:px-8 py-3 rounded-lg font-semibold text-base sm:text-lg transition-colors duration-200 disabled:cursor-not-allowed w-full sm:w-auto"
             >
               {t('submitAnswer')}
             </button>
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-xs sm:text-sm text-gray-500 mt-2">
               {selectedAnswer === null ? t('pleaseSelectAnswer') : t('clickToSubmit')}
             </p>
           </div>
@@ -238,11 +238,11 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
 
         {/* Result Display */}
         {isAnswered && (
-          <div className="text-center space-y-6">
-            <div className={`flex items-center justify-center space-x-3 text-2xl font-bold ${
+          <div className="text-center space-y-4 sm:space-y-6">
+            <div className={`flex items-center justify-center space-x-2 sm:space-x-3 text-xl sm:text-2xl font-bold ${
               isCorrect ? 'text-green-600' : 'text-red-600'
             }`}>
-              {isCorrect ? <CheckCircle size={32} /> : <XCircle size={32} />}
+              {isCorrect ? <CheckCircle size={28} className="sm:w-8 sm:h-8" /> : <XCircle size={28} className="sm:w-8 sm:h-8" />}
               <span>
                 {timeLeft === 0 ? t('timesUp') : isCorrect ? t('correct') : t('incorrect')}
               </span>
@@ -250,7 +250,7 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
 
             {!isCorrect && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <p className="text-blue-800 font-medium">
+                <p className="text-blue-800 font-medium text-sm sm:text-base">
                   {t('correctAnswerWas')}: <strong>{String.fromCharCode(65 + question.correctAnswer)}. {question.options[question.correctAnswer]}</strong>
                 </p>
               </div>
@@ -258,7 +258,7 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
 
             <button
               onClick={handleReturnConfirmation}
-              className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200 mx-auto"
+              className="flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200 mx-auto w-full sm:w-auto text-sm sm:text-base"
             >
               <RotateCcw size={20} />
               <span>{t('returnToSpinner')}</span>
@@ -272,7 +272,7 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
         <div className="text-center">
           <button
             onClick={handleReturnConfirmation}
-            className="text-gray-500 hover:text-gray-700 underline text-sm transition-colors"
+            className="text-gray-500 hover:text-gray-700 underline text-xs sm:text-sm transition-colors"
           >
             {t('returnWithoutAnswering')}
           </button>

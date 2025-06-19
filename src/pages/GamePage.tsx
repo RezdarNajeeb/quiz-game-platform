@@ -224,24 +224,24 @@ const GamePage: React.FC = () => {
   const availableUsers = getAvailableUsers(gameState.users);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500" dir={settings.language === 'ckb' ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 relative" dir={settings.language === 'ckb' ? 'rtl' : 'ltr'}>
       {/* Admin Link */}
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4 z-20">
         <Link
           to="/admin"
-          className="flex items-center space-x-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg backdrop-blur-sm transition-all duration-200 font-medium"
+          className="flex items-center space-x-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-lg backdrop-blur-sm transition-all duration-200 font-medium text-sm sm:text-base shadow-lg"
         >
           <Settings size={20} />
-          <span>{t('admin')}</span>
+          <span className="hidden sm:inline">{t('admin')}</span>
         </Link>
       </div>
 
       {/* Main Content */}
-      <div className="flex items-center justify-center min-h-screen p-4">
+      <div className="flex items-center justify-center min-h-screen p-4 pt-20 sm:pt-4">
         <div className="text-center space-y-8">
           <div className="mb-12">
-            <h1 className="text-6xl font-bold text-white mb-4 drop-shadow-lg">{t('quizRoulette')}</h1>
-            <p className="text-xl text-white opacity-90 font-medium">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 drop-shadow-lg px-4">{t('quizRoulette')}</h1>
+            <p className="text-lg sm:text-xl text-white opacity-90 font-medium px-4">
               {t('spinToSelect')}
             </p>
           </div>

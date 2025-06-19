@@ -109,27 +109,27 @@ const Spinner: React.FC<SpinnerProps> = ({
   const segmentAngle = availableUsers.length > 0 ? 360 / availableUsers.length : 0;
 
   return (
-    <div className="flex flex-col items-center space-y-8" dir={settings.language === 'ckb' ? 'rtl' : 'ltr'}>
+    <div className="flex flex-col items-center space-y-6 sm:space-y-8 w-full max-w-md sm:max-w-none mx-auto" dir={settings.language === 'ckb' ? 'rtl' : 'ltr'}>
       {/* Confirmation Modal */}
       {showConfirmation && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-8 max-w-md mx-4 shadow-2xl">
+          <div className="bg-white rounded-xl p-6 sm:p-8 max-w-sm sm:max-w-md mx-4 shadow-2xl">
             <div className="text-center">
-              <AlertTriangle size={48} className="mx-auto text-yellow-500 mb-4" />
-              <h3 className="text-xl font-bold text-gray-800 mb-4">{t('resetSpinnerPosition')}</h3>
-              <p className="text-gray-600 mb-6">
+              <AlertTriangle size={40} className="mx-auto text-yellow-500 mb-4 sm:w-12 sm:h-12" />
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">{t('resetSpinnerPosition')}</h3>
+              <p className="text-sm sm:text-base text-gray-600 mb-6">
                 {t('resetSpinnerDescription')}
               </p>
-              <div className="flex space-x-4">
+              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
                 <button
                   onClick={cancelReset}
-                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg font-medium transition-colors"
+                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base"
                 >
                   {t('cancel')}
                 </button>
                 <button
                   onClick={confirmReset}
-                  className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base"
                 >
                   {t('reset')}
                 </button>
@@ -140,9 +140,9 @@ const Spinner: React.FC<SpinnerProps> = ({
       )}
 
       {/* Main Spinner */}
-      <div className="relative w-96 h-96">
+      <div className="relative w-80 h-80 sm:w-96 sm:h-96 mx-auto">
         {/* Outer Ring with Gradient */}
-        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500 shadow-2xl p-3">
+        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500 shadow-2xl p-2 sm:p-3">
           {/* Inner White Circle */}
           <div className="w-full h-full rounded-full bg-white relative overflow-hidden shadow-inner">
             {/* Spinning Content Container */}
@@ -180,7 +180,7 @@ const Spinner: React.FC<SpinnerProps> = ({
               {userPositions.map(({ user, x, y, angle, index }) => (
                 <div
                   key={user.id}
-                  className="absolute text-sm font-bold text-gray-800 whitespace-nowrap transform -translate-x-1/2 -translate-y-1/2 select-none"
+                  className="absolute text-xs sm:text-sm font-bold text-gray-800 whitespace-nowrap transform -translate-x-1/2 -translate-y-1/2 select-none"
                   style={{
                     left: `calc(50% + ${x}px)`,
                     top: `calc(50% + ${y}px)`,
@@ -207,8 +207,8 @@ const Spinner: React.FC<SpinnerProps> = ({
               ))}
 
               {/* Center Circle */}
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg border-4 border-white">
-                <RotateCcw size={28} className="text-white" />
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg border-4 border-white">
+                <RotateCcw size={24} className="text-white sm:w-7 sm:h-7" />
               </div>
             </div>
           </div>
@@ -228,16 +228,16 @@ const Spinner: React.FC<SpinnerProps> = ({
 
       {/* Selected User Display */}
       {selectedUser && !isAnimating && (
-        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-8 text-center shadow-xl max-w-md">
-          <h3 className="text-2xl font-bold text-green-800 mb-3">{t('selectedPlayer')}</h3>
-          <p className="text-4xl font-bold text-green-700 mb-6">{selectedUser.name}</p>
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-6 sm:p-8 text-center shadow-xl max-w-sm sm:max-w-md mx-4">
+          <h3 className="text-xl sm:text-2xl font-bold text-green-800 mb-3">{t('selectedPlayer')}</h3>
+          <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-700 mb-4 sm:mb-6 break-words">{selectedUser.name}</p>
           {showStartButton && (
             <button
               onClick={handleStartQuestion}
               disabled={disabled}
-              className="flex items-center space-x-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none mx-auto"
+              className="flex items-center justify-center space-x-2 sm:space-x-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none mx-auto w-full sm:w-auto"
             >
-              <ArrowRight size={24} />
+              <ArrowRight size={20} className="sm:w-6 sm:h-6" />
               <span>{t('startQuestion')}</span>
             </button>
           )}
@@ -245,15 +245,15 @@ const Spinner: React.FC<SpinnerProps> = ({
       )}
 
       {/* Control Buttons */}
-      <div className="flex flex-col items-center space-y-4">
+      <div className="flex flex-col items-center space-y-3 sm:space-y-4 w-full px-4">
         {/* Spin Button */}
         {!showStartButton && (
           <button
             onClick={spinForUser}
             disabled={availableUsers.length === 0 || isSpinning || disabled || isAnimating}
-            className="flex items-center space-x-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white px-10 py-5 rounded-xl font-bold text-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none disabled:hover:scale-100"
+            className="flex items-center justify-center space-x-2 sm:space-x-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white px-8 sm:px-10 py-4 sm:py-5 rounded-xl font-bold text-lg sm:text-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none disabled:hover:scale-100 w-full sm:w-auto max-w-xs sm:max-w-none"
           >
-            <Play size={32} />
+            <Play size={24} className="sm:w-8 sm:h-8" />
             <span>
               {isAnimating ? t('spinning') : t('spinTheWheel')}
             </span>
@@ -265,7 +265,7 @@ const Spinner: React.FC<SpinnerProps> = ({
           <button
             onClick={handleResetConfirmation}
             disabled={disabled}
-            className="flex items-center space-x-2 bg-white bg-opacity-20 hover:bg-opacity-30 disabled:bg-opacity-10 text-white px-4 py-2 rounded-lg backdrop-blur-sm transition-all duration-200 font-medium border border-white border-opacity-30"
+            className="flex items-center justify-center space-x-2 bg-white bg-opacity-20 hover:bg-opacity-30 disabled:bg-opacity-10 text-white px-4 py-2 rounded-lg backdrop-blur-sm transition-all duration-200 font-medium border border-white border-opacity-30 text-sm sm:text-base"
           >
             <RotateCcw size={16} />
             <span>{t('resetPosition')}</span>
@@ -274,29 +274,29 @@ const Spinner: React.FC<SpinnerProps> = ({
       </div>
 
       {/* Status Messages */}
-      <div className="text-center space-y-3">
-        <p className="text-lg font-medium text-white">
+      <div className="text-center space-y-2 sm:space-y-3 px-4">
+        <p className="text-base sm:text-lg font-medium text-white">
           {availableUsers.length} {availableUsers.length !== 1 ? t('playersRemaining') : t('player')}
         </p>
         
         {availableUsers.length === 0 && (
-          <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6 text-center shadow-lg">
-            <p className="text-yellow-800 font-bold text-xl">{t('allPlayersCompleted')}</p>
-            <p className="text-yellow-700 mt-2">{t('readyNewRound')}</p>
+          <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4 sm:p-6 text-center shadow-lg mx-4">
+            <p className="text-yellow-800 font-bold text-lg sm:text-xl">{t('allPlayersCompleted')}</p>
+            <p className="text-yellow-700 mt-2 text-sm sm:text-base">{t('readyNewRound')}</p>
           </div>
         )}
 
         {disabled && (
-          <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 text-center">
-            <p className="text-red-800 font-medium">{t('spinnerDisabled')}</p>
+          <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 text-center mx-4">
+            <p className="text-red-800 font-medium text-sm sm:text-base">{t('spinnerDisabled')}</p>
           </div>
         )}
       </div>
 
       {/* Loading State */}
       {isAnimating && (
-        <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4 text-center">
-          <p className="text-blue-800 font-medium">{t('selectingPlayer')}</p>
+        <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4 text-center mx-4">
+          <p className="text-blue-800 font-medium text-sm sm:text-base">{t('selectingPlayer')}</p>
         </div>
       )}
     </div>
