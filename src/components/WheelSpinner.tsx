@@ -61,6 +61,25 @@ const WheelSpinner: React.FC<WheelSpinnerProps> = ({
     }
   }, [availableUsers]);
 
+  // Function to determine which user the arrow is pointing to
+  const getUserAtArrow = useCallback((rotation: number): User | null => {
+    if (availableUsers.length === 0) return null;
+
+    const segmentAngle = (2 * Math.PI) / availableUsers.length;
+    
+    // Normalize rotation to 0-2π range
+    const normalizedRotation = ((rotation % (2 * Math.PI)) + (2 * Math.PI)) % (2 * Math.PI);
+    
+    // The arrow points to the top (0 radians), so we need to find which segment is at the top
+    // Since we rotate the wheel clockwise, we need to account for that
+    const arrowAngle = (2 * Math.PI - normalizedRotation) % (2 * Math.PI);
+    
+    // Find which segment the arrow is pointing to
+    const segmentIndex = Math.floor(arrowAngle / segmentAngle) % availableUsers.length;
+    
+    return availableUsers[segmentIndex];
+  }, [availableUsers]);
+
   // Draw the wheel
   const drawWheel = useCallback((rotation: number = 0) => {
     const canvas = canvasRef.current;
@@ -201,9 +220,12 @@ const WheelSpinner: React.FC<WheelSpinnerProps> = ({
     const randomIndex = Math.floor(Math.random() * availableUsers.length);
     const targetUser = availableUsers[randomIndex];
     
-    // Calculate target angle
+    // Calculate target angle - we want the selected segment to be at the top (where arrow points)
     const segmentAngle = (2 * Math.PI) / availableUsers.length;
-    const targetAngle = randomIndex * segmentAngle + segmentAngle / 2;
+    // To get segment at top, we need to rotate so that the segment's center is at 0 radians
+    const targetSegmentCenter = randomIndex * segmentAngle + segmentAngle / 2;
+    // We want this to end up at 0 (top), so we need to rotate by -targetSegmentCenter
+    const targetAngle = -targetSegmentCenter;
     const totalRotation = spins * 2 * Math.PI + targetAngle;
 
     const startTime = Date.now();
@@ -223,16 +245,19 @@ const WheelSpinner: React.FC<WheelSpinnerProps> = ({
       if (progress < 1) {
         requestAnimationFrame(animate);
       } else {
-        // Animation complete
-        setSelectedUser(targetUser);
+        // Animation complete - verify the selection
+        const finalSelectedUser = getUserAtArrow(rotation);
+        const actualSelectedUser = finalSelectedUser || targetUser;
+        
+        setSelectedUser(actualSelectedUser);
         setShowStartButton(true);
         setIsAnimating(false);
-        onUserSelected(targetUser);
+        onUserSelected(actualSelectedUser);
       }
     };
 
     requestAnimationFrame(animate);
-  }, [availableUsers, isSpinning, disabled, isAnimating, currentRotation, drawWheel, onUserSelected]);
+  }, [availableUsers, isSpinning, disabled, isAnimating, currentRotation, drawWheel, onUserSelected, getUserAtArrow]);
 
   const handleStartQuestion = () => {
     if (!selectedUser || disabled) return;
@@ -311,15 +336,15 @@ const WheelSpinner: React.FC<WheelSpinnerProps> = ({
             style={{ maxWidth: '100%', height: 'auto' }}
           />
           
-          {/* Pointer Arrow */}
-          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-2 z-10">
+          {/* Pointer Arrow - Fixed to point downward into the wheel */}
+          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 translate-y-2 z-10">
             <div className="relative">
               {/* Arrow Shadow */}
-              <div className="absolute top-1 left-1 w-0 h-0 border-l-[12px] border-r-[12px] border-b-[20px] border-l-transparent border-r-transparent border-b-gray-400 opacity-30"></div>
-              {/* Main Arrow */}
-              <div className="w-0 h-0 border-l-[12px] border-r-[12px] border-b-[20px] border-l-transparent border-r-transparent border-b-red-500"></div>
-              {/* Arrow Tip */}
-              <div className="w-3 h-3 bg-red-500 rounded-full mx-auto -mt-1 shadow-lg border-2 border-white"></div>
+              <div className="absolute top-1 left-1 w-0 h-0 border-l-[12px] border-r-[12px] border-t-[20px] border-l-transparent border-r-transparent border-t-gray-400 opacity-30"></div>
+              {/* Main Arrow pointing DOWN into the wheel */}
+              <div className="w-0 h-0 border-l-[12px] border-r-[12px] border-t-[20px] border-l-transparent border-r-transparent border-t-red-500"></div>
+              {/* Arrow Base Circle */}
+              <div className="w-3 h-3 bg-red-500 rounded-full mx-auto -mt-5 shadow-lg border-2 border-white"></div>
             </div>
           </div>
 
