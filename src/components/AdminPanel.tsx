@@ -617,8 +617,10 @@ const AdminPanel: React.FC = () => {
                   </p>
                   <button
                     onClick={() => {
-                      resetGameRound();
+                      if (confirm("Are You Sure?")) {
+                        resetGameRound();
                       window.history.back();
+                      }
                     }}
                     className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-md font-semibold transition-colors w-full sm:w-auto text-sm sm:text-base"
                   >
