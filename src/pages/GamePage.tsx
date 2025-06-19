@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Settings, AlertTriangle } from 'lucide-react';
-import Spinner from '../components/Spinner';
+import WheelSpinner from '../components/WheelSpinner';
 import QuestionDisplay from '../components/QuestionDisplay';
 import GameComplete from '../components/GameComplete';
 import { GameState, User, Question } from '../types/game';
@@ -246,7 +246,7 @@ const GamePage: React.FC = () => {
             </p>
           </div>
 
-          <Spinner
+          <WheelSpinner
             availableUsers={availableUsers}
             onUserSelected={handleUserSelected}
             onStartQuestion={handleStartQuestion}
