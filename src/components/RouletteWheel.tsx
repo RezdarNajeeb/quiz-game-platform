@@ -12,47 +12,6 @@ interface RouletteWheelProps {
   disabled?: boolean;
 }
 
-// Traditional European roulette wheel numbers and colors
-const rouletteNumbers = [
-  { number: 0, color: 'green' },
-  { number: 32, color: 'red' },
-  { number: 15, color: 'black' },
-  { number: 19, color: 'red' },
-  { number: 4, color: 'black' },
-  { number: 21, color: 'red' },
-  { number: 2, color: 'black' },
-  { number: 25, color: 'red' },
-  { number: 17, color: 'black' },
-  { number: 34, color: 'red' },
-  { number: 6, color: 'black' },
-  { number: 27, color: 'red' },
-  { number: 13, color: 'black' },
-  { number: 36, color: 'red' },
-  { number: 11, color: 'black' },
-  { number: 30, color: 'red' },
-  { number: 8, color: 'black' },
-  { number: 23, color: 'red' },
-  { number: 10, color: 'black' },
-  { number: 5, color: 'red' },
-  { number: 24, color: 'black' },
-  { number: 16, color: 'red' },
-  { number: 33, color: 'black' },
-  { number: 1, color: 'red' },
-  { number: 20, color: 'black' },
-  { number: 14, color: 'red' },
-  { number: 31, color: 'black' },
-  { number: 9, color: 'red' },
-  { number: 22, color: 'black' },
-  { number: 18, color: 'red' },
-  { number: 29, color: 'black' },
-  { number: 7, color: 'red' },
-  { number: 28, color: 'black' },
-  { number: 12, color: 'red' },
-  { number: 35, color: 'black' },
-  { number: 3, color: 'red' },
-  { number: 26, color: 'black' }
-];
-
 const RouletteWheel: React.FC<RouletteWheelProps> = ({ 
   availableUsers, 
   onUserSelected, 
@@ -61,7 +20,6 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
   disabled = false
 }) => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
   const [rotation, setRotation] = useState(0);
   const [showStartButton, setShowStartButton] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -75,7 +33,6 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
   useEffect(() => {
     if (availableUsers.length === 0) {
       setSelectedUser(null);
-      setSelectedNumber(null);
       setShowStartButton(false);
     }
   }, [availableUsers]);
@@ -85,23 +42,18 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
 
     // Reset previous selection
     setSelectedUser(null);
-    setSelectedNumber(null);
     setShowStartButton(false);
     setIsAnimating(true);
 
     // Calculate spin parameters
     const spinDuration = 4000 + Math.random() * 2000; // 4-6 seconds
     const extraRotations = 8 + Math.floor(Math.random() * 8); // 8-16 full rotations
-    const segmentAngle = 360 / rouletteNumbers.length;
+    const segmentAngle = 360 / availableUsers.length;
     
-    // Select random user and corresponding roulette number
+    // Select random user
     const randomUserIndex = Math.floor(Math.random() * availableUsers.length);
     const targetUser = availableUsers[randomUserIndex];
-    
-    // Map user to a roulette number (distribute users across numbers)
-    const numberIndex = randomUserIndex % rouletteNumbers.length;
-    const targetNumber = rouletteNumbers[numberIndex];
-    const targetAngle = segmentAngle * numberIndex + (segmentAngle / 2);
+    const targetAngle = segmentAngle * randomUserIndex + (segmentAngle / 2);
     
     const finalRotation = rotation + (360 * extraRotations) + (360 - targetAngle);
     
@@ -110,7 +62,6 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
     // Wait for animation to complete
     setTimeout(() => {
       setSelectedUser(targetUser);
-      setSelectedNumber(targetNumber.number);
       setShowStartButton(true);
       setIsAnimating(false);
       onUserSelected(targetUser);
@@ -130,7 +81,6 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
 
   const confirmReset = () => {
     setSelectedUser(null);
-    setSelectedNumber(null);
     setShowStartButton(false);
     setRotation(0);
     setIsAnimating(false);
@@ -141,16 +91,33 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
     setShowConfirmation(false);
   };
 
-  const getNumberColor = (color: string) => {
-    switch (color) {
-      case 'red': return 'bg-red-600 text-white';
-      case 'black': return 'bg-gray-900 text-white';
-      case 'green': return 'bg-green-600 text-white';
-      default: return 'bg-gray-600 text-white';
-    }
+  // Generate alternating colors for user segments
+  const getSegmentColor = (index: number) => {
+    const colors = [
+      'bg-red-600 text-white',
+      'bg-blue-600 text-white',
+      'bg-green-600 text-white',
+      'bg-purple-600 text-white',
+      'bg-orange-600 text-white',
+      'bg-indigo-600 text-white',
+      'bg-pink-600 text-white',
+      'bg-teal-600 text-white'
+    ];
+    return colors[index % colors.length];
   };
 
-  const segmentAngle = 360 / rouletteNumbers.length;
+  const segmentAngle = availableUsers.length > 0 ? 360 / availableUsers.length : 0;
+
+  if (availableUsers.length === 0) {
+    return (
+      <div className="flex flex-col items-center space-y-6 sm:space-y-8 w-full max-w-md sm:max-w-none mx-auto" dir={settings.language === 'ckb' ? 'rtl' : 'ltr'}>
+        <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6 text-center shadow-lg mx-4">
+          <p className="text-yellow-800 font-bold text-xl">{t('allPlayersCompleted')}</p>
+          <p className="text-yellow-700 mt-2">{t('readyNewRound')}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center space-y-6 sm:space-y-8 w-full max-w-md sm:max-w-none mx-auto" dir={settings.language === 'ckb' ? 'rtl' : 'ltr'}>
@@ -201,15 +168,16 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
                   transitionTimingFunction: 'cubic-bezier(0.23, 1, 0.32, 1)'
                 }}
               >
-                {/* Roulette Number Segments */}
-                {rouletteNumbers.map((entry, index) => {
+                {/* User Name Segments */}
+                {availableUsers.map((user, index) => {
                   const angle = segmentAngle * index;
                   const nextAngle = segmentAngle * (index + 1);
+                  const midAngle = angle + segmentAngle / 2;
                   
                   return (
                     <div
-                      key={`${entry.number}-${index}`}
-                      className={`absolute w-full h-full ${getNumberColor(entry.color)} flex items-center justify-center font-bold text-lg sm:text-xl`}
+                      key={`${user.id}-${index}`}
+                      className={`absolute w-full h-full ${getSegmentColor(index)} flex items-center justify-center font-bold`}
                       style={{
                         clipPath: `polygon(50% 50%, ${
                           50 + 48 * Math.cos(((angle - 90) * Math.PI) / 180)
@@ -222,28 +190,34 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
                         }%)`
                       }}
                     >
-                      {/* Number positioned in the center of each segment */}
+                      {/* User name positioned in the center of each segment */}
                       <div
-                        className="absolute whitespace-nowrap select-none transform -translate-x-1/2 -translate-y-1/2"
+                        className="absolute whitespace-nowrap select-none transform -translate-x-1/2 -translate-y-1/2 text-center px-1"
                         style={{
-                          left: `calc(50% + ${30 * Math.cos(((angle + segmentAngle/2 - 90) * Math.PI) / 180)}px)`,
-                          top: `calc(50% + ${30 * Math.sin(((angle + segmentAngle/2 - 90) * Math.PI) / 180)}px)`,
-                          transform: `translate(-50%, -50%) rotate(${angle + segmentAngle/2}deg)`,
-                          textShadow: '0 1px 2px rgba(0,0,0,0.3)',
-                          fontSize: entry.number === 0 ? '1.1em' : '1em'
+                          left: `calc(50% + ${35 * Math.cos(((midAngle - 90) * Math.PI) / 180)}px)`,
+                          top: `calc(50% + ${35 * Math.sin(((midAngle - 90) * Math.PI) / 180)}px)`,
+                          transform: `translate(-50%, -50%) rotate(${midAngle}deg)`,
+                          textShadow: '0 1px 3px rgba(0,0,0,0.5)',
+                          fontSize: availableUsers.length > 12 ? '0.75rem' : 
+                                   availableUsers.length > 8 ? '0.875rem' : 
+                                   availableUsers.length > 6 ? '1rem' : '1.125rem',
+                          maxWidth: availableUsers.length > 8 ? '60px' : '80px',
+                          lineHeight: '1.2',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis'
                         }}
                       >
-                        {entry.number}
+                        {user.name.length > 12 ? `${user.name.substring(0, 10)}...` : user.name}
                       </div>
                     </div>
                   );
                 })}
 
                 {/* Separator lines */}
-                {rouletteNumbers.map((_, index) => (
+                {availableUsers.map((_, index) => (
                   <div
                     key={`separator-${index}`}
-                    className="absolute w-0.5 bg-white origin-bottom opacity-50"
+                    className="absolute w-0.5 bg-white origin-bottom opacity-70"
                     style={{
                       height: '48%',
                       left: '50%',
@@ -255,7 +229,9 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
 
                 {/* Center Hub */}
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center shadow-lg border-4 border-white">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-amber-600 to-amber-800 rounded-full"></div>
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-amber-600 to-amber-800 rounded-full flex items-center justify-center">
+                    <RotateCcw size={16} className="text-white sm:w-5 sm:h-5" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -269,19 +245,14 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
         </div>
 
         {/* Selection Highlight */}
-        {selectedNumber !== null && !isAnimating && (
+        {selectedUser && !isAnimating && (
           <div className="absolute inset-2 rounded-full border-4 border-yellow-400 animate-pulse shadow-lg"></div>
         )}
       </div>
 
       {/* Selection Results */}
-      {selectedUser && selectedNumber !== null && !isAnimating && (
+      {selectedUser && !isAnimating && (
         <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-6 sm:p-8 text-center shadow-xl max-w-sm sm:max-w-md mx-4">
-          <div className="mb-4">
-            <div className={`inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full ${getNumberColor(rouletteNumbers.find(n => n.number === selectedNumber)?.color || 'black')} text-2xl sm:text-3xl font-bold mb-4 shadow-lg`}>
-              {selectedNumber}
-            </div>
-          </div>
           <h3 className="text-xl sm:text-2xl font-bold text-green-800 mb-2">{t('selectedPlayer')}</h3>
           <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-700 mb-4 sm:mb-6 break-words">{selectedUser.name}</p>
           {showStartButton && (
@@ -332,13 +303,6 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
           {availableUsers.length} {availableUsers.length !== 1 ? t('playersRemaining') : t('player')}
         </p>
         
-        {availableUsers.length === 0 && (
-          <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4 sm:p-6 text-center shadow-lg mx-4">
-            <p className="text-yellow-800 font-bold text-lg sm:text-xl">{t('allPlayersCompleted')}</p>
-            <p className="text-yellow-700 mt-2 text-sm sm:text-base">{t('readyNewRound')}</p>
-          </div>
-        )}
-
         {disabled && (
           <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 text-center mx-4">
             <p className="text-red-800 font-medium text-sm sm:text-base">{t('spinnerDisabled')}</p>
