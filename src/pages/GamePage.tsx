@@ -185,7 +185,7 @@ const GamePage: React.FC = () => {
           <p className="text-gray-600 mb-4">{t('unableToLoadGame')}</p>
           <button
             onClick={() => window.location.reload()}
-            className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium"
+            className="bg-red-600 hover:bg-red-700 active:bg-red-800 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] min-w-[120px]"
           >
             {t('refreshPage')}
           </button>
@@ -225,23 +225,23 @@ const GamePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 relative" dir={settings.language === 'ckb' ? 'rtl' : 'ltr'}>
-      {/* Admin Link */}
-      <div className="absolute top-4 right-4 z-20">
+      {/* Admin Link - Fixed positioning with proper z-index and touch targets */}
+      <div className="fixed top-4 right-4 z-50">
         <Link
           to="/admin"
-          className="flex items-center space-x-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-lg backdrop-blur-sm transition-all duration-200 font-medium text-sm sm:text-base shadow-lg"
+          className="flex items-center justify-center space-x-1 sm:space-x-2 bg-white bg-opacity-90 hover:bg-opacity-100 active:bg-opacity-80 text-gray-800 px-3 py-3 sm:px-4 sm:py-2 rounded-lg backdrop-blur-sm transition-all duration-200 font-medium text-sm sm:text-base shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 min-h-[44px] min-w-[44px] sm:min-w-auto"
         >
-          <Settings size={20} />
+          <Settings size={20} className="flex-shrink-0" />
           <span className="hidden sm:inline">{t('admin')}</span>
         </Link>
       </div>
 
       {/* Main Content */}
       <div className="flex items-center justify-center min-h-screen p-4 pt-20 sm:pt-4">
-        <div className="text-center space-y-8">
-          <div className="mb-12">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 drop-shadow-lg px-4">{t('quizRoulette')}</h1>
-            <p className="text-lg sm:text-xl text-white opacity-90 font-medium px-4">
+        <div className="text-center space-y-8 w-full max-w-4xl">
+          <div className="mb-8 sm:mb-12">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 drop-shadow-lg px-4">{t('quizRoulette')}</h1>
+            <p className="text-base sm:text-lg lg:text-xl text-white opacity-90 font-medium px-4">
               {t('spinToSelect')}
             </p>
           </div>
@@ -255,15 +255,15 @@ const GamePage: React.FC = () => {
           />
 
           {/* Game Statistics */}
-          <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-6 text-white">
+          <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-4 sm:p-6 text-white mx-4">
             <div className="grid grid-cols-2 gap-4 text-center">
               <div>
-                <p className="text-2xl font-bold">{gameState.totalRounds}</p>
-                <p className="text-sm opacity-80">{t('roundsCompleted')}</p>
+                <p className="text-xl sm:text-2xl font-bold">{gameState.totalRounds}</p>
+                <p className="text-xs sm:text-sm opacity-80">{t('roundsCompleted')}</p>
               </div>
               <div>
-                <p className="text-2xl font-bold">{gameState.users.filter(u => u.hasPlayedThisRound).length}</p>
-                <p className="text-sm opacity-80">{t('playersCompleted')}</p>
+                <p className="text-xl sm:text-2xl font-bold">{gameState.users.filter(u => u.hasPlayedThisRound).length}</p>
+                <p className="text-xs sm:text-sm opacity-80">{t('playersCompleted')}</p>
               </div>
             </div>
           </div>
