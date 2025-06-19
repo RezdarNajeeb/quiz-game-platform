@@ -108,23 +108,23 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
 
   // Enhanced font size calculation - BIGGER fonts!
   const getFontSize = (userCount: number, nameLength: number) => {
-    if (userCount <= 4) return nameLength > 10 ? '20px' : '24px';
-    if (userCount <= 6) return nameLength > 8 ? '18px' : '22px';
-    if (userCount <= 8) return nameLength > 6 ? '16px' : '20px';
-    if (userCount <= 12) return nameLength > 5 ? '14px' : '18px';
-    if (userCount <= 16) return nameLength > 4 ? '12px' : '16px';
-    return nameLength > 3 ? '10px' : '14px';
+    if (userCount <= 4) return nameLength > 10 ? '18px' : '22px';
+    if (userCount <= 6) return nameLength > 8 ? '16px' : '20px';
+    if (userCount <= 8) return nameLength > 6 ? '14px' : '18px';
+    if (userCount <= 12) return nameLength > 5 ? '12px' : '16px';
+    if (userCount <= 16) return nameLength > 4 ? '10px' : '14px';
+    return nameLength > 3 ? '8px' : '12px';
   };
 
   // Truncate name if too long
   const getTruncatedName = (name: string, userCount: number) => {
     let maxLength;
-    if (userCount <= 4) maxLength = 15;
-    else if (userCount <= 6) maxLength = 12;
-    else if (userCount <= 8) maxLength = 10;
-    else if (userCount <= 12) maxLength = 8;
-    else if (userCount <= 16) maxLength = 6;
-    else maxLength = 5;
+    if (userCount <= 4) maxLength = 12;
+    else if (userCount <= 6) maxLength = 10;
+    else if (userCount <= 8) maxLength = 8;
+    else if (userCount <= 12) maxLength = 6;
+    else if (userCount <= 16) maxLength = 5;
+    else maxLength = 4;
 
     return name.length > maxLength ? `${name.substring(0, maxLength - 1)}…` : name;
   };
@@ -215,26 +215,19 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
                         }}
                       />
                       
-                      {/* Radial Text - Flowing from center to edge like dividers */}
+                      {/* Radial Text - Positioned along the radius */}
                       <div
                         className="absolute text-white font-black select-none pointer-events-none z-10"
                         style={{
-                          left: '50%',
-                          top: '50%',
-                          transformOrigin: '0 0',
-                          transform: `rotate(${midAngle}deg)`,
+                          left: `calc(50% + ${35 * Math.cos(((midAngle - 90) * Math.PI) / 180)}px)`,
+                          top: `calc(50% + ${35 * Math.sin(((midAngle - 90) * Math.PI) / 180)}px)`,
+                          transform: `translate(-50%, -50%) rotate(${midAngle > 90 && midAngle < 270 ? midAngle + 180 : midAngle}deg)`,
                           fontSize: getFontSize(availableUsers.length, user.name.length),
                           fontWeight: '900',
                           textShadow: '3px 3px 6px rgba(0,0,0,0.9), -3px -3px 6px rgba(0,0,0,0.8), 0 0 12px rgba(0,0,0,0.7), 0 0 20px rgba(0,0,0,0.5)',
                           WebkitTextStroke: '1px rgba(0,0,0,0.9)',
                           filter: 'drop-shadow(0 0 4px rgba(0,0,0,1))',
                           whiteSpace: 'nowrap',
-                          width: '42%', // Text flows from center to edge
-                          height: 'auto',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          paddingLeft: '18%', // Start text away from center hub
                           letterSpacing: availableUsers.length > 12 ? '-0.5px' : '0.5px',
                         }}
                         title={user.name}
